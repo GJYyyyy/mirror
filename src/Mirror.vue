@@ -3,8 +3,8 @@
         <div class="content">
             <slot></slot>
         </div>
-        <div class="mirror-entity"
-            :style="`--endPoint:${_endPoint};--blur:${_blur};--opacity:${_opacity};--dropShadowColor:${dropShadowColor};--dropShadowOffsetX:${_dropShadowOffsetX};--dropShadowOffsetY:${_dropShadowOffsetY};`">
+        <div class="mirror-entity" :class="{ gradient: gradient, 'drop-shadow': dropShadow }"
+            :style="`--gradientPoint:${_gradientPoint};--blur:${_blur};--opacity:${_opacity};--gap:${_gap};--dropShadowColor:${dropShadowColor};--dropShadowOffsetX:${_dropShadowOffsetX};--dropShadowOffsetY:${_dropShadowOffsetY};`">
             <slot></slot>
         </div>
     </div>
@@ -12,9 +12,13 @@
 
 <script>
 export default {
-    name: 'Mirror',
+    name: "Mirror",
     props: {
-        endPoint: {
+        gradient: {
+            type: Boolean,
+            default: true,
+        },
+        gradientPoint: {
             type: Number,
             default: 0.4,
         },
@@ -24,11 +28,19 @@ export default {
         },
         opacity: {
             type: Number,
-            default: 0.5
+            default: 0.5,
+        },
+        gap: {
+            type: Number,
+            default: 0,
+        },
+        dropShadow: {
+            type: Boolean,
+            default: false,
         },
         dropShadowColor: {
             type: String,
-            default: 'black',
+            default: "black",
         },
         dropShadowOffsetX: {
             type: Number,
@@ -40,15 +52,20 @@ export default {
         },
     },
     computed: {
-        _endPoint() {
-            let num = this.endPoint;
-            if (this.endPoint < 0) num = 0;
-            if (this.endPoint > 1) num = 1;
+        _gradientPoint() {
+            let num = this.gradientPoint;
+            if (this.gradientPoint < 0) num = 0;
+            if (this.gradientPoint > 1) num = 1;
             return `${num * 100}%`;
         },
         _blur() {
             let num = this.blur;
             if (this.blur < 0) num = 0;
+            return `${num}px`;
+        },
+        _gap() {
+            let num = this.gap;
+            if (this.gap < 0) num = 0;
             return `${num}px`;
         },
         _opacity() {
@@ -67,8 +84,8 @@ export default {
             if (this.dropShadowOffsetY < 0) num = 0;
             return `${num}px`;
         },
-    }
-}
+    },
+};
 </script>
 
 <style scoped>
@@ -80,14 +97,21 @@ export default {
 
 .mirror>.mirror-entity {
     position: absolute;
-    top: 100%;
+    top: calc(100% + var(--gap));
     left: 0%;
     width: 100%;
     height: 100%;
     transform: rotateZ(180deg) rotateY(180deg);
-    mask: linear-gradient(to top, white 0%, transparent var(--endPoint)) center/100% 100%;
-    filter: drop-shadow(var(--dropShadowOffsetX) var(--dropShadowOffsetY) var(--dropShadowColor)) blur(var(--blur));
-    opacity: var(--opacity);
     pointer-events: none;
+    opacity: var(--opacity);
+    filter: blur(var(--blur));
+}
+
+.mirror>.mirror-entity.gradient {
+    mask: linear-gradient(to top, white 0%, transparent var(--gradientPoint)) center/100% 100%;
+}
+
+.mirror>.mirror-entity.drop-shadow {
+    filter: drop-shadow(var(--dropShadowOffsetX) var(--dropShadowOffsetY) var(--dropShadowColor)) blur(var(--blur));
 }
 </style>
