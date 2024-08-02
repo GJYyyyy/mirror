@@ -1,3 +1,3 @@
-const Simulate3D = require('@/Simulate3D.vue');
+const Mirror = require('@/Mirror.vue');
 
-export default Simulate3D;
+export default Mirror;
